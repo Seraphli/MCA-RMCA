@@ -62,6 +62,7 @@ int main(int argc, char** argv){
             ("anytime-log", po::value<std::string>()->default_value(""), "output file for anytime log")
             ("destory-method", po::value<std::string>()->default_value("destory-max"), "destory-max or random")
             ("online","online mode")
+            ("MAPDwHC","Multi-Agent Pickup and Delivery with Human Cooperation")
             ("kiva","load kiva map and tasks");
 
 
@@ -130,7 +131,15 @@ int main(int argc, char** argv){
     MapLoaderCost* mapLoader;
     AgentLoader* agentLoader;
     TaskLoader* taskLoader;
-    if (vm.count("kiva")){
+    if (vm.count("MAPDwHC")){
+        mapLoader = new MapLoaderCost();
+        agentLoader = new AgentLoader();
+        taskLoader = new TaskLoader();
+
+        mapLoader->loadKiva(map);
+        agentLoader->loadKiva(agent,capacity,*mapLoader);
+        taskLoader->loadMAPDwHC(task,*mapLoader);
+    } else if (vm.count("kiva")){
         mapLoader = new MapLoaderCost();
         agentLoader = new AgentLoader();
         taskLoader = new TaskLoader();
@@ -231,7 +240,72 @@ int main(int argc, char** argv){
     }
 
 
-    if (vm.count("online")){
+    if (vm.count("MAPDwHC")){
+        //online mode
+        OnlineSimu online(taskAssignment, taskLoader, agentLoader, mapLoader);
+        online.simulate(vm.count("anytime"), vm.count("MAPDwHC"));
+
+        if (screen>=1){
+            // taskAssignment->printAssignments();
+            taskAssignment->printPath();
+        }
+
+        int ideal_cost = 0;
+        int ideal_delay = 0;
+        int total_cost = 0;
+        int total_delay = 0;
+        for (Assignment& assign: taskAssignment->assignments){
+            ideal_cost += assign.ideal_cost;
+            ideal_delay += assign.actions.back().current_total_delay;
+            if (assign.path.size()!= 0)
+                total_cost += assign.path.size()-1;
+            total_delay +=assign.current_total_delay;
+        }
+
+        if (screen >=1)
+        cout <<"1"<<","<<agentLoader->num_of_agents<<
+              ","<<taskLoader->num_of_tasks<<
+              ","<< ideal_cost <<","<<total_cost << "," << ideal_delay <<","<< total_delay << ","
+              <<taskAssignment->current_makespan<<","<<taskAssignment->current_makespan<<","
+              << taskAssignment->get_num_agents_with_tasks()<< "," << online.runtime / CLOCKS_PER_SEC
+              << "," << taskAssignment->runtime_pp / CLOCKS_PER_SEC
+              << "," << taskAssignment->runtime_update_conflict / CLOCKS_PER_SEC <<
+              "," << taskAssignment->runtime_update_changed_agent / CLOCKS_PER_SEC<<
+              ","<< taskAssignment->num_of_pp <<
+              ","<< taskAssignment->num_conflict_updates<<
+              ","<< taskAssignment->num_task_assign_updates<<
+              "," <<endl;
+
+        if (output!="") {
+
+            ofstream stats;
+            stats.open(output, ios::app);
+            stats <<"1"<<","<<agentLoader->num_of_agents<<
+                  ","<<taskLoader->num_of_tasks<<
+                  ","<< ideal_cost <<","<<total_cost << "," << ideal_delay <<","<< total_delay << ","
+                  <<taskAssignment->current_makespan<<","<<taskAssignment->current_makespan<<","
+                  << taskAssignment->get_num_agents_with_tasks()<< "," << taskAssignment->runtime / CLOCKS_PER_SEC
+                  << "," << taskAssignment->runtime_pp / CLOCKS_PER_SEC
+                  << "," << taskAssignment->runtime_update_conflict / CLOCKS_PER_SEC <<
+                  "," << taskAssignment->runtime_update_changed_agent / CLOCKS_PER_SEC<<
+                  ","<< taskAssignment->num_of_pp <<
+                  ","<< taskAssignment->num_conflict_updates<<
+                  ","<< taskAssignment->num_task_assign_updates<<
+                  "," <<endl;
+            stats.close();
+        }
+        if(vm.count("anytime")){
+            if(vm["anytime-log"].as<string>() != ""){
+                ofstream stats;
+                stats.open(vm["anytime-log"].as<string>(), ios::trunc);
+                stats <<"Iteration,size,runtime,cost"<<endl;
+                for(auto log: taskAssignment->iteration_log){
+                    stats <<log.iteration<<","<<log.g_size<<","<<log.runtime<<","<<log.final_cost<<endl;
+                }
+                stats.close();
+            }
+        }
+    } else if (vm.count("online")){
         //online mode
         OnlineSimu online(taskAssignment, taskLoader, agentLoader, mapLoader);
         online.simulate(vm.count("anytime"));
@@ -425,12 +499,4 @@ int main(int argc, char** argv){
         }
 
     }
-
-
-
-
-
-
-
-
 }

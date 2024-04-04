@@ -9,3 +9,4 @@ debug
 MAPD/.DS_Store
 
 cmake-build*
+.cache

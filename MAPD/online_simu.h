@@ -18,7 +18,7 @@ struct AgentStatus{
 class OnlineSimu{
 public:
     OnlineSimu(TaskAssignment* ta, TaskLoader* tl, AgentLoader* al, MapLoader* ml);
-    bool simulate(bool anytime = false);
+    bool simulate(bool anytime = false, bool partial = false);
     void initializeAssignments();
     void setTasks(int timestep);
     bool updateAgentStatus(int timestep);
