@@ -246,7 +246,7 @@ int main(int argc, char** argv){
         online.simulate(vm.count("anytime"), vm.count("MAPDwHC"));
 
         if (screen>=1){
-            // taskAssignment->printAssignments();
+            taskAssignment->printAssignments();
             taskAssignment->printPath();
         }
 
