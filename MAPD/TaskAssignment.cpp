@@ -70,6 +70,12 @@ bool TaskAssignment::assignTasks() {
     }
 
     Assignment *min_cost_assign = get_best_assignment();
+    if (min_cost_assign == nullptr) {
+      if (screen >= 1) {
+        cout << "No valid assignment found, exiting." << endl;
+      }
+      break; // No valid assignment found
+    }
 
     int agent_id = min_cost_assign->agent->agent_id;
     int task_id = min_cost_assign->new_add_task->task_id;
@@ -750,6 +756,10 @@ void TaskAssignment::buildAssignmentHeap() {
         handleTable[task->task_id][a->agent_id].node_ = NULL;
         delete min_cost_assign;
       }
+    }
+    if (new_assignment_heap->empty()) {
+      delete new_assignment_heap;
+      continue;
     }
     logAssignmentHandle(task, NULL, new_assignment_heap);
   }

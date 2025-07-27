@@ -15,6 +15,10 @@ void TaskAssignmentPP::updateAllAssignmentHeap(Agent* updatedAgent,Task* assigne
             continue;
         }
         AssignmentHeap* assignHeap = *handlePair.second;
+        // Skip empty heaps
+        if (assignHeap == nullptr || assignHeap->empty()) {
+            continue;
+        }
         int current_best = assignHeap->top()->cost_increase;
 
         if(ta_option.only_top){
@@ -51,7 +55,7 @@ void TaskAssignmentPP::updateAllAssignmentHeap(Agent* updatedAgent,Task* assigne
             }
 
             bool stop = false;
-            while (!stop){
+            while (!stop && !assignHeap->empty()){
                 Assignment* assign = assignHeap->top();
                 int j = assign->agent->agent_id;
                 int conflict_time =  haveConflict(assign->agent->agent_id,assign->path);

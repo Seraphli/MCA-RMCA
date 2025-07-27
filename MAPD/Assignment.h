@@ -112,6 +112,9 @@ typedef boost::heap::fibonacci_heap< Assignment*, boost::heap::compare<Assignmen
 struct compare_assignment_heap {
     // returns true if t1 > t2 (note -- this gives us *min*-heap).
     bool operator()(const AssignmentHeap *t1, const AssignmentHeap *t2) const {
+        if (t1->empty() || t2->empty()) {
+            return t1->empty() && !t2->empty();
+        }
         if (t1->top()->cost_increase == t2->top()->cost_increase) {
             if (t1->top()->path.size() == t2->top()->path.size()){
                 if( t1->top()->ideal_cost == t2->top()->ideal_cost){

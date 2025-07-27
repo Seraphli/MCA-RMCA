@@ -37,15 +37,34 @@ public:
 
         allAssignmentHandles.clear();
     };
-    Assignment* get_best_assignment() override{return allAssignmentHeap.top()->top();};
-    void delete_top(int task_id) override{
-        for (auto assign : *(allAssignmentHeap.top())){
-            delete assign;
+    Assignment* get_best_assignment() override{
+        // Safety check to ensure the heap is not empty
+        if (allAssignmentHeap.empty()) {
+            return nullptr; // Handle this case appropriately in the caller
         }
-        delete allAssignmentHeap.top();
+        AssignmentHeap* top_heap = allAssignmentHeap.top();
+        if (top_heap == nullptr || top_heap->empty()) {
+            return nullptr; // Handle this case appropriately in the caller
+        }
+        return top_heap->top();
+    };
+    
+    void delete_top(int task_id) override{
+        // Safety check to ensure the heap is not empty
+        if (allAssignmentHeap.empty()) {
+            handleTable[task_id].clear();
+            return;
+        }
+        
+        AssignmentHeap* top_heap = allAssignmentHeap.top();
+        if (top_heap != nullptr) {
+            for (auto assign : *top_heap){
+                delete assign;
+            }
+            delete top_heap;
+        }
         allAssignmentHeap.pop();
         handleTable[task_id].clear();
-
     }
     void logAssignmentHandle(Task* task,Agent* a,AssignmentHeap* new_assignment_heap) override{
         allAssignmentHandles[task->task_id] = allAssignmentHeap.push(new_assignment_heap);
@@ -67,17 +86,35 @@ public:
 
     void updateAllAssignmentHeap(Agent* updatedAgent,Task* assignedTask) override;
     void printTaskHeap(){
-        for(auto it = allAssignmentHeap.ordered_begin();it!= allAssignmentHeap.ordered_end();++it){
+        if (allAssignmentHeap.empty()) {
+            cout << "Task heap is empty" << endl;
+            return;
+        }
+        
+        for(auto it = allAssignmentHeap.ordered_begin(); it != allAssignmentHeap.ordered_end(); ++it){
             auto agentHeap = (*it);
-            cout<<" Task : "<<agentHeap->top()->new_add_task->task_id;
-            cout<<" MC : "<<agentHeap->top()->cost_increase;
-
-
-            for (auto agit = agentHeap->ordered_begin();agit!=agentHeap->ordered_end();++agit){
-                auto assign = (*agit);
-                cout<<", Agent: "<<assign->agent->agent_id<<" MC: "<<assign->cost_increase;
+            
+            if (agentHeap == nullptr || agentHeap->empty()) {
+                cout << " Task : <empty heap>" << endl;
+                continue;
             }
-            cout<<endl;
+            
+            Assignment* top_assign = agentHeap->top();
+            if (top_assign == nullptr) {
+                cout << " Task : <null assignment>" << endl;
+                continue;
+            }
+            
+            cout << " Task : " << top_assign->new_add_task->task_id;
+            cout << " MC : " << top_assign->cost_increase;
+
+            for (auto agit = agentHeap->ordered_begin(); agit != agentHeap->ordered_end(); ++agit){
+                auto assign = (*agit);
+                if (assign != nullptr) {
+                    cout << ", Agent: " << assign->agent->agent_id << " MC: " << assign->cost_increase;
+                }
+            }
+            cout << endl;
         }
     }
 
