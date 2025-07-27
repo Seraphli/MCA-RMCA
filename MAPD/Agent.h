@@ -23,6 +23,7 @@ public:
     int agent_id;
     int initial_location;
     int capacity;
+    bool dropping;
 
 };
 

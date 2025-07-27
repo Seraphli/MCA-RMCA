@@ -718,6 +718,7 @@ void TaskAssignment::buildAssignmentHeap() {
     AssignmentHeap *new_assignment_heap = new AssignmentHeap();
     if (task->aid == -1) {
       for (Agent *a : agents->agents) {
+        if (a->dropping) continue;
         if (screen >= 5)
           cout << "Build heap for Agent: " << a->agent_id << endl;
         Assignment *min_cost_assign =
@@ -736,6 +737,7 @@ void TaskAssignment::buildAssignmentHeap() {
       }
     } else {
       Agent *a = agents->agents[task->aid];
+      a->dropping = true;
       if (screen >= 5)
         cout << "Build heap for Agent: " << a->agent_id << endl;
       Assignment *min_cost_assign =

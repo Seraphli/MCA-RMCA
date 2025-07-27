@@ -8,6 +8,7 @@ Agent::Agent(int id, int initial_loc, int capacity) {
     this->agent_id = id;
     this->initial_location = initial_loc;
     this->capacity = capacity;
+    this->dropping = false;
 }
 
 AgentLoader::AgentLoader(const std::string fname, const MapLoaderCost &ml){
