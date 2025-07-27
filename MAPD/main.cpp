@@ -70,7 +70,6 @@ int main(int argc, char** argv){
     po::store(po::parse_command_line(argc, argv, desc), temp);
     const po::variables_map vm = temp;
     screen = vm["screen"].as<int>();
-    float time_limit = vm["cutoffTime"].as<float>();
     string task = vm["tasks"].as<string>();
     string agent = vm["agents"].as<string>();
     string map = vm["map"].as<string>();
@@ -210,6 +209,7 @@ int main(int argc, char** argv){
         ta_options.real_cost_insert=true;
     }
 
+    float time_limit = vm["cutoffTime"].as<float>() / agentLoader->num_of_agents;
     TaskAssignment* taskAssignment;
 
     if (s == constraint_strategy::PP && vm.count("task")){

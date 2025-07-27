@@ -582,7 +582,7 @@ int TaskAssignment::prioritized_planning(vector<PathEntry> &path,
       continue;
     }
     SinglePlanning planner(*map, a->agent_id, start, goal, start_time,
-                           min_end_time, 1.0, 0, this->pl_option,
+                           min_end_time, 1.0, this->planning_time_limit, this->pl_option,
                            this->constraintTable);
     bool success = planner.search(actions[i].action_type == ACTION_TYPE::DOCK);
     //        assert(success);
