@@ -708,6 +708,14 @@ Assignment *TaskAssignment::insertTask(Agent *a, Task *task, bool real_cost) {
     if (min_cost_increase == 0)
       break;
   }
+  if (min_cost_assign->actions.empty()) {
+    if (screen >= 5) {
+      cout << "No valid assignment found for agent: " << a->agent_id
+           << ", task: " << task->task_id << endl;
+    }
+    min_cost_assign->current_total_delay = -1;
+    return min_cost_assign;
+  }
 
   min_cost_assign->agent = a;
   min_cost_assign->new_add_task = task;
@@ -724,7 +732,10 @@ void TaskAssignment::buildAssignmentHeap() {
     AssignmentHeap *new_assignment_heap = new AssignmentHeap();
     if (task->aid == -1) {
       for (Agent *a : agents->agents) {
-        if (a->dropping) continue;
+        if (a->dropping){
+          handleTable[task->task_id][a->agent_id].node_ = NULL;
+          continue;
+        };
         if (screen >= 5)
           cout << "Build heap for Agent: " << a->agent_id << endl;
         Assignment *min_cost_assign =
@@ -756,10 +767,6 @@ void TaskAssignment::buildAssignmentHeap() {
         handleTable[task->task_id][a->agent_id].node_ = NULL;
         delete min_cost_assign;
       }
-    }
-    if (new_assignment_heap->empty()) {
-      delete new_assignment_heap;
-      continue;
     }
     logAssignmentHandle(task, NULL, new_assignment_heap);
   }
