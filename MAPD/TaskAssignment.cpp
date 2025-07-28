@@ -768,6 +768,10 @@ void TaskAssignment::buildAssignmentHeap() {
         delete min_cost_assign;
       }
     }
+    if (new_assignment_heap->empty()) {
+      delete new_assignment_heap;
+      continue;
+    }
     logAssignmentHandle(task, NULL, new_assignment_heap);
   }
 }

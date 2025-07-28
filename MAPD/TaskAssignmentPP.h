@@ -85,7 +85,7 @@ public:
     }
 
     void updateAllAssignmentHeap(Agent* updatedAgent,Task* assignedTask) override;
-    void printTaskHeap(){
+    void printTaskHeap() override {
         if (allAssignmentHeap.empty()) {
             cout << "Task heap is empty" << endl;
             return;
