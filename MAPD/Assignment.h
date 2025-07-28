@@ -133,6 +133,9 @@ struct compare_assignment_heap {
 struct compare_assignment_heap_regret_old {
 // returns true if t1 > t2 (note -- this gives us *min*-heap).
     bool operator()(const AssignmentHeap *t1, const AssignmentHeap *t2) const {
+        if (t1->empty() || t2->empty()) {
+            return t1->empty() && !t2->empty();
+        }
         int t1_top_diff;
         auto it1 = t1->ordered_begin();
         Assignment *t1_first = *(it1);
@@ -178,6 +181,9 @@ struct compare_assignment_heap_regret_old {
 struct compare_assignment_heap_regret {
 // returns true if t1 > t2 (note -- this gives us *min*-heap).
     bool operator()(const AssignmentHeap *t1, const AssignmentHeap *t2) const {
+        if (t1->empty() || t2->empty()) {
+            return t1->empty() && !t2->empty();
+        }
         int t1_top_diff;
         auto it1 = t1->ordered_begin();
         Assignment* t1_first = *(it1);
@@ -253,6 +259,9 @@ struct compare_assignment_heap_regret {
 struct compare_assignment_heap_regret_minus {
 // returns true if t1 > t2 (note -- this gives us *min*-heap).
     bool operator()(const AssignmentHeap *t1, const AssignmentHeap *t2) const {
+        if (t1->empty() || t2->empty()) {
+            return t1->empty() && !t2->empty();
+        }
         int t1_top_diff;
         auto it1 = t1->ordered_begin();
         Assignment* t1_first = *(it1);
@@ -302,6 +311,9 @@ struct compare_assignment_heap_regret_minus {
 struct compare_assignment_heap_regret_partial {
 // returns true if t1 > t2 (note -- this gives us *min*-heap).
     bool operator()(const AssignmentHeap *t1, const AssignmentHeap *t2) const {
+        if (t1->empty() || t2->empty()) {
+            return t1->empty() && !t2->empty();
+        }
         int t1_top_diff;
         auto it1 = t1->ordered_begin();
         Assignment* t1_first = *(it1);

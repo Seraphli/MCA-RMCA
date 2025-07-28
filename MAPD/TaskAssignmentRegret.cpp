@@ -16,6 +16,10 @@ void TaskAssignmentRegret::updateAllAssignmentHeap(Agent* updatedAgent,Task* ass
             continue;
         }
         AssignmentHeap* assignHeap = *handlePair.second;
+        // Skip empty heaps
+        if (assignHeap == nullptr || assignHeap->empty()) {
+            continue;
+        }
         int current_best;
 
        if(ta_option.only_top){
@@ -54,7 +58,7 @@ void TaskAssignmentRegret::updateAllAssignmentHeap(Agent* updatedAgent,Task* ass
             }
 
             bool stop = false;
-            while (!stop){
+            while (!stop && !assignHeap->empty()){
                 if(screen>=4)
                     cout<<"Check top of "<< i <<endl;
                 auto it = assignHeap->ordered_begin();
